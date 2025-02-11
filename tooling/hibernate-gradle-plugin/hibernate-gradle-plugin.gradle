@@ -1,0 +1,163 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+/*
+ * Hibernate, Relational Persistence for Idiomatic Java
+ *
+ * License: GNU Lesser General Public License (LGPL), version 2.1 or later.
+ * See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ */
+
+plugins {
+	id 'java-gradle-plugin'
+	id "local.module"
+	id "local.javadoc"
+
+	id 'com.gradle.plugin-publish' version '1.2.1'
+	// for local publishing
+	id 'maven-publish'
+}
+
+description = "Gradle plugin for integrating Hibernate aspects into your build"
+
+dependencies {
+	implementation project(':hibernate-core')
+	implementation libs.byteBuddy
+	implementation jakartaLibs.jaxbApi
+
+	implementation gradleApi()
+	implementation localGroovy()
+
+	// for Gradle
+	implementation jakartaLibs.inject
+	implementation localGroovy()
+
+	testImplementation gradleTestKit()
+	testImplementation testLibs.assertjCore
+	testImplementation testLibs.junit5Api
+
+	testRuntimeOnly testLibs.junit5Engine
+}
+
+gradlePlugin {
+	website = 'https://github.com/hibernate/hibernate-orm/tree/main/tooling/hibernate-gradle-plugin'
+	vcsUrl = 'https://github.com/hibernate/hibernate-orm/tree/main/tooling/hibernate-gradle-plugin'
+
+	plugins {
+		ormPlugin {
+			id = "org.hibernate.orm"
+			implementationClass = "org.hibernate.orm.tooling.gradle.HibernateOrmPlugin"
+			displayName = 'Gradle plugin for Hibernate ORM'
+			description = 'Applies Hibernate aspects into the build'
+			tags = ['hibernate','orm','bytecode','enhancement','bytebuddy']
+		}
+	}
+}
+
+tasks.withType(AbstractArchiveTask).configureEach {
+	preserveFileTimestamps = false
+	reproducibleFileOrder = true
+}
+
+test {
+	useJUnitPlatform()
+	if ( project.hasProperty( 'excludeTests' ) ) {
+		exclude project.property( 'excludeTests' ) as String
+	}
+}
+
+def releasePrepareTask = tasks.register("releasePrepare") {
+	group "release-prepare"
+	description "See :release:releasePrepare for details.  Here we hook in the `check` task."
+
+	dependsOn tasks.check
+}
+
+// used from the h2 CI job
+tasks.register("preVerifyRelease") {
+	group "release-prepare"
+	description "Delegates to `releasePrepare` task"
+
+	dependsOn releasePrepareTask
+}
+
+tasks.register("releasePerform") {
+	group "release-perform"
+	description "See :release:releasePerform for details.  Here we hook in publishing to the Plugin Portal"
+
+	dependsOn tasks.publishPlugins
+}
+
+// local publishing (SNAPSHOT testing)
+tasks.publish.dependsOn tasks.publishPlugins
+
+
+// local publishing (SNAPSHOT testing)
+publishing {
+	repositories {
+		maven {
+			name = 'localPluginRepository'
+			url = "${buildDir}/local-plugin-repository"
+		}
+	}
+}
+
+processResources {
+	inputs.property( "orm-version", getVersion() )
+	description = description + " (injected with Hibernate version)"
+	filter( ReplaceTokens, tokens: [ 'hibernateVersion': getVersion() ] )
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+}
+
+if ( !jdkVersions.explicit ) {
+	tasks.withType(GroovyCompile).configureEach {
+		sourceCompatibility = JavaVersion.toVersion(jdkVersions.baseline)
+		targetCompatibility = JavaVersion.toVersion(jdkVersions.baseline)
+	}
+}
+else {
+	logger.warn( "[WARN] Toolchains are not yet supported for Groovy compilation." +
+						 " Using the JDK that runs Gradle for Groovy compilation." )
+}
+
+tasks.publish.enabled !ormBuildDetails.hibernateVersion.isSnapshot
+tasks.publishPlugins.enabled !ormBuildDetails.hibernateVersion.isSnapshot
+
+gradle.taskGraph.whenReady { tg ->
+	// local publishing (SNAPSHOT testing), cont.
+	//		- https://github.com/gradle-nexus/publish-plugin/issues/143
+	//		- https://github.com/gradle-nexus/publish-plugin/pull/144
+	tasks.withType(PublishToMavenRepository).configureEach {t->
+		if (t.repository == null) {
+			logger.info("Task `{}` had null repository", t.path)
+		}
+		else if (t.repository.name == "sonatype") {
+			logger.debug("Disabling task `{}` because it publishes to Sonatype", t.path)
+			t.enabled = false
+		}
+	}
+
+	// verify credentials for publishing the plugin up front to avoid any work (only if we are publishing)
+	if ( tg.hasTask( ":publishPlugins" ) && project.tasks.publishPlugins.enabled  ) {
+		// we are publishing the plugin - make sure there is a credentials pair
+		//
+		// first, check the `GRADLE_PUBLISH_KEY` / `GRADLE_PUBLISH_SECRET` combo (env vars)
+		// and then the `gradle.publish.key` / `gradle.publish.secret` combo (project prop)
+		//		- see https://docs.gradle.org/current/userguide/publishing_gradle_plugins.html#account_setup
+		if ( System.getenv().get("GRADLE_PUBLISH_KEY") != null ) {
+			if ( System.getenv().get("GRADLE_PUBLISH_SECRET") != null ) {
+				throw new RuntimeException( "`GRADLE_PUBLISH_KEY` specified, but not `GRADLE_PUBLISH_SECRET` for publishing Gradle plugin" )
+			}
+		}
+		else if ( project.findProperty( 'gradle.publish.key' ) != null ) {
+			if ( project.findProperty( 'gradle.publish.secret' ) != null ) {
+				throw new RuntimeException( "`gradle.publish.key` specified, but not `gradle.publish.secret` for publishing Gradle plugin" )
+			}
+		}
+		else {
+			throw new RuntimeException( "No credentials specified for publishing Gradle plugin" )
+		}
+	}
+}

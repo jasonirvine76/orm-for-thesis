@@ -1,0 +1,4 @@
+plugins {
+    id "local.java-module"
+    id "org.hibernate.build.version-injection"
+}

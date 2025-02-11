@@ -1,0 +1,31 @@
+/*
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ * Copyright Red Hat Inc. and Hibernate Authors
+ */
+package org.hibernate.tool.schema.internal;
+
+import org.hibernate.tool.schema.spi.CommandAcceptanceException;
+import org.hibernate.tool.schema.spi.ExceptionHandler;
+
+import org.jboss.logging.Logger;
+
+/**
+ * @author Steve Ebersole
+ */
+public class ExceptionHandlerLoggedImpl implements ExceptionHandler {
+	private static final Logger log = Logger.getLogger( ExceptionHandlerLoggedImpl.class );
+
+	/**
+	 * Singleton access
+	 */
+	public static final ExceptionHandlerLoggedImpl INSTANCE = new ExceptionHandlerLoggedImpl();
+
+	@Override
+	public void handleException(CommandAcceptanceException exception) {
+		log.warnf(
+				exception,
+				"GenerationTarget encountered exception accepting command : %s",
+				exception.getMessage()
+		);
+	}
+}
