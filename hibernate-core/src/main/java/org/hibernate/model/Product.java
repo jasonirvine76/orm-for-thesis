@@ -44,4 +44,12 @@ public abstract class Product {
 	}
 
 	public abstract BigDecimal getPrice();
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
 }

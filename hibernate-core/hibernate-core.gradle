@@ -38,6 +38,7 @@ dependencies {
     implementation jakartaLibs.inject
 
     implementation libs.antlrRuntime
+    implementation 'org.postgresql:postgresql:42.6.0'
 
     compileOnly jakartaLibs.jacc
     compileOnly jakartaLibs.validation

@@ -149,6 +149,7 @@ public class Insert {
 			renderRowValues( buf );
 			buf.append( ')' );
 		}
+		System.out.println("Call Insert.java: " + buf);
 		return buf.toString();
 	}
 

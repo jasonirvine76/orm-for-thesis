@@ -500,7 +500,9 @@ public class JoinedSubclassEntityPersister extends AbstractEntityPersister {
 				}
 			}
 		}
-
+		for (Object obj : customSQLInsert) {
+			System.out.println("Entity CustomSQLInsert: " + obj);
+		}
 		subclassNamesBySubclassTable = buildSubclassNamesBySubclassTableMapping(
 				persistentClass,
 				creationContext.getSqlStringGenerationContext()

@@ -19,4 +19,8 @@ public class BasicProduct extends Product {
 	public BigDecimal getPrice() {
 		return price;
 	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
 }

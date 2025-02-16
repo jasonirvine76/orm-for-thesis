@@ -290,7 +290,7 @@ public class InsertExecutionDelegate implements TableBasedInsertHandler.Executio
 				tableExpression,
 				true
 		);
-
+		System.out.println("InsertRootTable (InsertExecutionDelegate)");
 		final EntityPersister entityPersister = entityDescriptor.getEntityPersister();
 		final Generator generator = entityPersister.getGenerator();
 		final List<Assignment> assignments = assignmentsByTable.get( updatingTableReference );

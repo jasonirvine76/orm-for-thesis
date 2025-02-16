@@ -177,6 +177,12 @@ public class InsertCoordinatorStandard extends AbstractMutationCoordinator imple
 
 		final MutationExecutor mutationExecutor = executor( session, staticInsertGroup, false );
 
+		System.out.println("Static Insert Coordinator Standard: " + insertValuesAnalysis);
+		for (Object obj : values) {
+			System.out.println(obj);
+		}
+		System.out.println("Static Insert Coordinator Standard Value: " + values);
+
 		decomposeForInsert(
 				mutationExecutor,
 				id,
@@ -226,7 +232,7 @@ public class InsertCoordinatorStandard extends AbstractMutationCoordinator imple
 				}
 			}
 		}
-
+		System.out.println("InsertCoordinator InsertDelegate " + entityPersister().getInsertDelegate());
 		if ( id == null ) {
 			assert entityPersister().getInsertDelegate() != null;
 		}
@@ -245,6 +251,7 @@ public class InsertCoordinatorStandard extends AbstractMutationCoordinator imple
 			JdbcValueBindings jdbcValueBindings,
 			EntityTableMapping tableDetails) {
 		final String tableName = tableDetails.getTableName();
+		System.out.println("breakDownJdbcValue: " + tableName);
 		tableDetails.getKeyMapping().breakDownKeyJdbcValues(
 				id,
 				(jdbcValue, columnMapping) -> {
@@ -302,6 +309,8 @@ public class InsertCoordinatorStandard extends AbstractMutationCoordinator imple
 		final TableInclusionChecker tableInclusionChecker = getTableInclusionChecker( insertValuesAnalysis );
 
 		decomposeForInsert( mutationExecutor, id, values, insertGroup, insertability, tableInclusionChecker, session );
+		System.out.println("Insert Coordinator Standard: " + insertValuesAnalysis);
+		System.out.println("Insert Coordinator Standard Value: " + values);
 
 		try {
 			return mutationExecutor.execute(

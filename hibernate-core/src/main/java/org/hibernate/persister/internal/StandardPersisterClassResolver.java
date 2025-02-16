@@ -5,6 +5,7 @@
 package org.hibernate.persister.internal;
 
 import org.hibernate.mapping.Collection;
+import org.hibernate.mapping.DeltaClass;
 import org.hibernate.mapping.JoinedSubclass;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.RootClass;
@@ -29,6 +30,7 @@ public class StandardPersisterClassResolver implements PersisterClassResolver {
 	public Class<? extends EntityPersister> getEntityPersisterClass(PersistentClass model) {
 		// todo : make sure this is based on an attribute kept on the metamodel in the new code,
 		//        not the concrete PersistentClass impl found!
+		System.out.println("StandardPersisterClassResolver: " + model.getClassName() + " " + model.getClass());
 		if ( model instanceof RootClass ) {
 			if ( model.hasSubclasses() ) {
 				//If the class has children, we need to find of which kind
@@ -38,6 +40,7 @@ public class StandardPersisterClassResolver implements PersisterClassResolver {
 				return singleTableEntityPersister();
 			}
 		}
+		System.out.println("StandardPersisterClassResolver hasSubclass: " + model.getClassName() + " " + model.getClass());
 		if ( model instanceof JoinedSubclass ) {
 			return joinedSubclassEntityPersister();
 		}
@@ -45,6 +48,10 @@ public class StandardPersisterClassResolver implements PersisterClassResolver {
 			return unionSubclassEntityPersister();
 		}
 		else if ( model instanceof SingleTableSubclass ) {
+			return singleTableEntityPersister();
+		}
+		else if ( model instanceof DeltaClass ) {
+			// TODO: Return DeltaClass persister
 			return singleTableEntityPersister();
 		}
 		else {

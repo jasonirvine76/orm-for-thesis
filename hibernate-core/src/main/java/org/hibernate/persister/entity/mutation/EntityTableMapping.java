@@ -134,6 +134,7 @@ public class EntityTableMapping implements TableMapping {
 	}
 
 	public KeyMapping getKeyMapping() {
+		System.out.println("Key Mapping: " + keyMapping);
 		return keyMapping;
 	}
 

@@ -1252,6 +1252,7 @@ public abstract class AbstractSqlAstTranslator<T extends JdbcOperation> implemen
 
 	protected void visitInsertStatementOnly(InsertSelectStatement statement) {
 		clauseStack.push( Clause.INSERT );
+		System.out.println("AbstractSqlAstTranslator called");
 		appendSql( "insert into " );
 		renderDmlTargetTableExpression( statement.getTargetTable() );
 
@@ -8857,10 +8858,9 @@ public abstract class AbstractSqlAstTranslator<T extends JdbcOperation> implemen
 	 */
 	protected void renderIntoIntoAndTable(TableInsertStandard tableInsert) {
 		sqlBuffer.append( "insert into " );
-
 		appendSql( tableInsert.getMutatingTable().getTableName() );
 		registerAffectedTable( tableInsert.getMutatingTable().getTableName() );
-
+		System.out.println("AbstractSqlAstTranslator called 2" + sqlBuffer);
 		sqlBuffer.append( ' ' );
 	}
 

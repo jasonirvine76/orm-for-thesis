@@ -44,4 +44,8 @@ public class DiscountedProduct extends Product implements ProductDecorator {
 				BigDecimal.ONE.subtract(discount)
 		);
 	}
+
+	public void setDiscount(BigDecimal discount) {
+		this.discount = discount;
+	}
 }

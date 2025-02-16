@@ -215,6 +215,9 @@ public class EntityBinder {
 				context,
 				inheritanceStates
 		);
+		if (!clazzToProcess.hasDirectAnnotationUsage( Delta.class )) {
+			entityBinder.handleInheritance( inheritanceState, superEntity, holder );
+		}
 //		entityBinder.handleInheritance( inheritanceState, superEntity, holder );
 		entityBinder.handleIdentifier( holder, inheritanceStates, inheritanceState );
 
