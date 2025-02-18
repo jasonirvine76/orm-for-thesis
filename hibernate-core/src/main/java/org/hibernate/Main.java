@@ -10,8 +10,10 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.model.BasicProduct;
-import org.hibernate.model.DiscountedProduct;
+import org.hibernate.model.Book;
+import org.hibernate.model.DiscountedProductA;
 import org.hibernate.model.DiscountedProductB;
+import org.hibernate.model.MyProduct;
 import org.hibernate.model.Product;
 
 
@@ -31,9 +33,12 @@ public class Main {
 
 		MetadataSources metadataSources = new MetadataSources(registry);
 		metadataSources.addAnnotatedClass( Product.class );
-		metadataSources.addAnnotatedClass( DiscountedProduct.class);
+//		metadataSources.addAnnotatedClass( DiscountedProduct.class);
 		metadataSources.addAnnotatedClass( DiscountedProductB.class );
 		metadataSources.addAnnotatedClass( BasicProduct.class );
+		metadataSources.addAnnotatedClass( DiscountedProductA.class );
+		metadataSources.addAnnotatedClass( MyProduct.class );
+		metadataSources.addAnnotatedClass( Book.class );
 
 		Metadata metadata = metadataSources.buildMetadata();
 
@@ -51,16 +56,21 @@ public class Main {
 			laptop.setName("Premium Laptop");
 //			laptop.setPrice(new BigDecimal(10));
 			session.persist(laptop);
-
+			System.out.println("=========================================================================");
+			Book book = new Book();
+			book.setAuthor( "Jono" );
+			book.setName( "Cara Menambang" );
+			session.persist( book );
+			System.out.println("=========================================================================");
 			DiscountedProductB product = new DiscountedProductB();
 			product.setName("Discounted Laptop");
 			product.setProduct( laptop );
 //			product.setDiscount(new BigDecimal( 10 ) ); // Assume discount is in %
 
 			session.persist(product);
+			System.out.println("=========================================================================");
 			session.getTransaction().commit();
-
-			System.out.println("Inserted: " + product);
+			System.out.println("=========================================================================");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -8802,10 +8802,14 @@ public abstract class AbstractSqlAstTranslator<T extends JdbcOperation> implemen
 
 	@Override
 	public void visitStandardTableInsert(TableInsertStandard tableInsert) {
+		System.out.println("visitStandardTableInsert: " + tableInsert.getTableName());
 		getCurrentClauseStack().push( Clause.INSERT );
 		try {
 			renderInsertInto( tableInsert );
-
+			System.out.println("visitStandardTableInsert Loop");
+			for (Object obj : tableInsert.getReturningColumns()) {
+				System.out.println(obj + " ytta");
+			}
 			if ( tableInsert.getNumberOfReturningColumns() > 0 ) {
 				visitReturningColumns( tableInsert::getReturningColumns );
 			}
@@ -8861,6 +8865,7 @@ public abstract class AbstractSqlAstTranslator<T extends JdbcOperation> implemen
 		appendSql( tableInsert.getMutatingTable().getTableName() );
 		registerAffectedTable( tableInsert.getMutatingTable().getTableName() );
 		System.out.println("AbstractSqlAstTranslator called 2" + sqlBuffer);
+		System.out.println(tableInsert);
 		sqlBuffer.append( ' ' );
 	}
 

@@ -70,6 +70,7 @@ public abstract class AbstractMutationExecutor implements MutationExecutor {
 				resultChecker,
 				session
 		);
+		System.out.println("executed berapa kali coba di AbstractMutationExecutor");
 		performSelfExecutingOperations( valuesAnalysis, inclusionChecker, session );
 		performBatchedOperations( valuesAnalysis, inclusionChecker, staleStateMapper );
 		return generatedValues;

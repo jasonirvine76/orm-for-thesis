@@ -2027,6 +2027,7 @@ public abstract class AbstractEntityPersister
 		if ( getFactory().getSessionFactoryOptions().isCommentsEnabled() ) {
 			select.setComment( "get version " + getEntityName() );
 		}
+		System.out.println("Abstract Entity Persister " + select.addRestriction( rootTableKeyColumnNames ).toStatementString());
 		return select.addRestriction( rootTableKeyColumnNames ).toStatementString();
 	}
 

@@ -98,7 +98,7 @@ public class EntityInsertAction extends AbstractEntityInsertAction {
 
 		// Don't need to lock the cache here, since if someone
 		// else inserted the same pk first, the insert would fail
-
+		System.out.println("ini ga ke execute?");
 		final SharedSessionContractImplementor session = getSession();
 		final Object id = getId();
 		final boolean veto = preInsert();
@@ -110,6 +110,7 @@ public class EntityInsertAction extends AbstractEntityInsertAction {
 			boolean success = false;
 			final GeneratedValues generatedValues;
 			try {
+				System.out.println("#@#@#@ EntityInsertAction " + persister + " " + persister.getEntityName() + " " + persister.getInsertCoordinator());
 				generatedValues = persister.getInsertCoordinator().insert( instance, id, getState(), session );
 				success = true;
 			}

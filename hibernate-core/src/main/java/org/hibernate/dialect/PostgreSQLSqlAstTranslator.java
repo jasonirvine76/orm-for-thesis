@@ -61,6 +61,7 @@ public class PostgreSQLSqlAstTranslator<T extends JdbcOperation> extends SqlAstT
 	@Override
 	protected void renderInsertIntoNoColumns(TableInsertStandard tableInsert) {
 		renderIntoIntoAndTable( tableInsert );
+		System.out.println("Psql sql ast translator");
 		appendSql( "default values" );
 	}
 

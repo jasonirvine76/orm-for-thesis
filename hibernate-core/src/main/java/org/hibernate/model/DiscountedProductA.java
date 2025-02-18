@@ -8,14 +8,25 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "discounted_products_a")
-public class DiscountedProductA {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // ✅ Change to Single Table
+@DiscriminatorColumn(name = "product_type", discriminatorType = DiscriminatorType.STRING) // ✅ Add discriminator
+@DiscriminatorValue("DISCOUNTED_A") // ✅ Unique identifier for this subclass
+@Table(name = "discounted_products_a") // ✅ All subclasses will use the "products" table
+public class DiscountedProductA extends Product {
 
-	@Column(name = "decorated_entity_id")
-	private Long productId;
+	@Column(precision = 3, scale = 2)
+	private BigDecimal discount;
 
-	private BigDecimal discountPercentage;
+	@Override
+	public BigDecimal getPrice() {
+		return discount;
+	}
+
+	public void setDiscount(BigDecimal discount) {
+		this.discount = discount;
+	}
+
+//	public void setProduct(Product product) {
+//		this.decoratedProduct = product;
+//	}
 }

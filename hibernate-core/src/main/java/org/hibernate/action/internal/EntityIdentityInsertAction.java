@@ -87,7 +87,9 @@ public class EntityIdentityInsertAction extends AbstractEntityInsertAction  {
 			boolean success = false;
 			final GeneratedValues generatedValues;
 			try {
+				System.out.println("#@#@#@ EntityInsertAction " + persister + " " + persister.getEntityName() + " " + persister.getInsertCoordinator());
 				generatedValues = persister.getInsertCoordinator().insert( instance, getState(), session );
+				System.out.println("Generated Values !@#: " + generatedValues);
 				generatedId = castNonNull( generatedValues ).getGeneratedValue( persister.getIdentifierMapping() );
 				success = true;
 			}
@@ -101,6 +103,7 @@ public class EntityIdentityInsertAction extends AbstractEntityInsertAction  {
 					persistenceContext.replaceEntityEntryRowId( getInstance(), rowId );
 				}
 			}
+			System.out.println("HasInsertGeneratedProperties " + persister.hasInsertGeneratedProperties());
 			if ( persister.hasInsertGeneratedProperties() ) {
 				persister.processInsertGeneratedProperties( generatedId, instance, getState(), generatedValues, session );
 			}

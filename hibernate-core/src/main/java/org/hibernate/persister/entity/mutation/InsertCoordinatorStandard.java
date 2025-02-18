@@ -177,7 +177,7 @@ public class InsertCoordinatorStandard extends AbstractMutationCoordinator imple
 
 		final MutationExecutor mutationExecutor = executor( session, staticInsertGroup, false );
 
-		System.out.println("Static Insert Coordinator Standard: " + insertValuesAnalysis);
+		System.out.println("Static Insert Coordinator Standard: " + insertValuesAnalysis.getClass());
 		for (Object obj : values) {
 			System.out.println(obj);
 		}
@@ -192,8 +192,9 @@ public class InsertCoordinatorStandard extends AbstractMutationCoordinator imple
 				tableInclusionChecker,
 				session
 		);
-
+		System.out.println("hibernate sql?");
 		try {
+			System.out.println("after this?");
 			return mutationExecutor.execute(
 					object,
 					insertValuesAnalysis,
@@ -234,9 +235,11 @@ public class InsertCoordinatorStandard extends AbstractMutationCoordinator imple
 		}
 		System.out.println("InsertCoordinator InsertDelegate " + entityPersister().getInsertDelegate());
 		if ( id == null ) {
+			System.out.println("ID null?");
 			assert entityPersister().getInsertDelegate() != null;
 		}
 		else {
+			System.out.println("Number of Operations: " + mutationGroup.getNumberOfOperations());
 			for ( int position = 0; position < mutationGroup.getNumberOfOperations(); position++ ) {
 				final MutationOperation jdbcOperation = mutationGroup.getOperation( position );
 				final EntityTableMapping tableDetails = (EntityTableMapping) jdbcOperation.getTableDetails();
